@@ -1,5 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
+Library    String
 
 *** Variables ***
 ${URL}                 https://q2-kcms.kashio-dev.net/
@@ -19,12 +20,14 @@ ${SELECT_ELEMENT_XPATH}    /html/body/app-root/div/div/app-payoutprocess-import/
 ${OPTION_2_XPATH}      /html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div[1]/div[2]/select/option[2]
 ${INPUT_FIELD_XPATH}   /html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div[2]/div[2]/form/input
 
-${FILE_PATH}           C:\\Users\\USUARIO\\OneDrive\\Kashio.net\\KPS-716\\qa-payout-services-1\\PAYOUT 1170.xlsx
+${FILE_PATH}           C:\\Users\\USUARIO\\PycharmProjects\\PythonProject\\FlujoPayoutPorCorte\\PAYOUT 1595.xlsx
 
 ${NEXT_BUTTON_XPATH}   /html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/button
 ${SECOND_NEXT_BUTTON_XPATH}   /html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div/button[2]
 ${THIRD_NEXT_BUTTON_XPATH}   /html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div/button[1]
 ${APPROVE_BUTTON_XPATH}   /html/body/app-root/div/div/payoutprocessview/div[2]/div/header/div/div/div[2]/div[2]/button
+
+
 
 *** Keywords ***
 Abrir Página de Login
@@ -100,9 +103,12 @@ Hacer Clic en Botón Detalle de Pago
     Wait Until Element Is Visible    xpath=${THIRD_NEXT_BUTTON_XPATH}    timeout=10s
     Click Element    xpath=${THIRD_NEXT_BUTTON_XPATH}
 
+
+
+
 Clic en Aprobar KCMS
     [Documentation]    Espera 4 segundos y luego hace clic en el botón de aprobar.
-    Sleep    8s
+    Sleep    15s
     Wait Until Element Is Visible    xpath=${APPROVE_BUTTON_XPATH}    timeout=10s
     Click Element    xpath=${APPROVE_BUTTON_XPATH}
 

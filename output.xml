@@ -1,639 +1,289 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.2 (Python 3.11.5 on win32)" generated="2025-03-20T14:07:06.520938" rpa="false" schemaversion="5">
-<suite id="s1" name="00-Borrador" source="C:\Users\USUARIO\PycharmProjects\pythonProject\FlujoPayoutPorCorte\00-borrador.robot">
-<kw name="Set Environment Variable" owner="OperatingSystem" type="SETUP">
-<msg time="2025-03-20T14:07:07.722641" level="INFO">Environment variable 'PYTHONPATH' set to value 'C:\Users\USUARIO\PycharmProjects\pythonProject\FlujoPayoutPorCorte'.</msg>
-<arg>PYTHONPATH</arg>
-<arg>C:\\Users\\USUARIO\\PycharmProjects\\pythonProject\\FlujoPayoutPorCorte</arg>
-<doc>Sets an environment variable to a specified value.</doc>
-<status status="PASS" start="2025-03-20T14:07:07.721579" elapsed="0.001062"/>
-</kw>
-<test id="s1-t1" name="Conectar a la base de datos y ejecutar consulta compleja" line="248">
-<kw name="Connect To Database" owner="DatabaseLibrary">
-<msg time="2025-03-20T14:07:07.723578" level="INFO">Looking for configuration file: 'resources\db.cfg'</msg>
-<msg time="2025-03-20T14:07:07.723578" level="INFO">Configuration file doesn't exist</msg>
-<msg time="2025-03-20T14:07:07.757478" level="INFO">Connect to DB using : pymysql.connect(db='KashioCore', user='juan.yaime', passwd=***, host='kashio-qa-02062023.cgq3qqvhlso3.us-east-1.rds.amazonaws.com', port=3306, charset='utf8mb4')</msg>
-<arg>pymysql</arg>
-<arg>${DB_NAME}</arg>
-<arg>${DB_USER}</arg>
-<arg>${DB_PASSWORD}</arg>
-<arg>${DB_HOST}</arg>
-<arg>${DB_PORT}</arg>
-<doc>Creates a database connection using the DB API 2.0 ``db_module`` and the parameters provided.
-Along with listed commonly used arguments (`db_name`, `db_host` etc.)
-you can set any other DB module specific parameters as key/value pairs.</doc>
-<status status="PASS" start="2025-03-20T14:07:07.723578" elapsed="0.585917"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:07.722641" elapsed="0.587872"/>
-</test>
-<test id="s1-t2" name="Ejecutar consulta SQL" line="252">
-<kw name="Set Variable" owner="BuiltIn">
-<msg time="2025-03-20T14:07:08.315096" level="INFO">${set_query} = SET @ProcessID = (SELECT process_id FROM Process WHERE public_id = 'pyo_q2_UrE3MzZEYE3obHJ44MVsrz');</msg>
-<var>${set_query}</var>
-<arg>SET @ProcessID = (SELECT process_id FROM Process WHERE public_id = 'pyo_q2_UrE3MzZEYE3obHJ44MVsrz');</arg>
-<doc>Returns the given values which can then be assigned to a variables.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.314082" elapsed="0.001014"/>
-</kw>
-<kw name="Set Variable" owner="BuiltIn">
-<msg time="2025-03-20T14:07:08.316095" level="INFO">${select_query} = SELECT deb.document_number AS 'ID CLIENTE', CASE WHEN deb.document_type_id = 1 THEN 'DNI' WHEN deb.document_type_id = 3 THEN 'RUC' ELSE 'DNI' END AS 'DOCUMENTO', deb.document_number AS 'NUMERO DOCUMEN...</msg>
-<var>${select_query}</var>
-<arg>SELECT deb.document_number AS 'ID CLIENTE', CASE WHEN deb.document_type_id = 1 THEN 'DNI' WHEN deb.document_type_id = 3 THEN 'RUC' ELSE 'DNI' END AS 'DOCUMENTO', deb.document_number AS 'NUMERO DOCUMENTO', deb.name AS 'NOMBRE', 'email@pruebas.com' AS 'EMAIL', deb.phone_number AS 'TELEFONO', 'ACTIVO' AS 'ESTADO', inv.psp_tin AS 'ID ORDEN DE PAGO', inv.psp_tin AS 'REFERENCIA', inv.psp_tin AS 'NOMBRE ORDEN', inv.psp_tin AS 'DESCRIPCION', inv.currency_code AS 'MONEDA', ROUND(inv.amount, 2) AS 'MONTO', '31/12/2022' AS 'VENCIMIENTO', '31/12/2022' AS 'EXPIRACION', CASE WHEN bank.external_id = '001' THEN '1' WHEN bank.external_id = '002' THEN '2' WHEN bank.external_id = '003' THEN '3' WHEN bank.external_id = '004' THEN '4' ELSE '000' END AS 'CODIGO BANCO', acc.account_number AS 'CUENTA', CASE WHEN acc.metadata-&gt;&gt;'$.type' = 'SAVING' THEN 'AHORRO' ELSE 'CORRIENTE' END AS 'TIPO DE CUENTA', acc.metadata-&gt;&gt;'$.cci' AS 'CCI' FROM Customer cus JOIN Process proc ON proc.customer_id = cus.customer_id JOIN Payout_Process pyo ON pyo.payout_process_id = proc.process_id JOIN ProcessStatus proc_s2 ON proc_s2.process_status_id = proc.process_status_id AND proc_s2.process_type_id = 10 JOIN Payout_Process_Items ppi ON ppi.payout_process_id = pyo.payout_process_id JOIN Account acc_pyo ON acc_pyo.account_id = pyo.account_id JOIN Invoice inv ON ppi.resource_id = inv.invoice_id AND inv.create_date &gt; '2023-04-01 15:45:15' JOIN Debtor deb ON deb.debtor_id = inv.debtor_id JOIN Customer deb_cus ON deb.customer_id = deb_cus.customer_id JOIN Account acc ON acc.customer_id = deb_cus.customer_id AND acc.public_id = CONVERT(inv.order_detail-&gt;&gt;'$.metadata.accounts[0].id' USING utf8) JOIN Bank bank ON bank.bank_id = acc.bank_id JOIN ProcessStatus proc_s1 ON proc_s1.process_status_id = inv.status AND proc_s1.process_type_id = 1 LEFT JOIN Payout po ON ppi.payout_id = po.payout_id LEFT JOIN Transaction tr ON po.payout_id = tr.transaction_id LEFT JOIN Configuration cnf ON cnf.customer_id = cus.customer_id AND cnf.key = 'payouts_services.configuration' WHERE cus.customer_type_id = 104 AND pyo.payout_process_id = @ProcessID AND inv.status = 3;</arg>
-<doc>Returns the given values which can then be assigned to a variables.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.316095" elapsed="0.000000"/>
-</kw>
-<kw name="Execute Sql String" owner="DatabaseLibrary">
-<msg time="2025-03-20T14:07:08.317092" level="INFO" html="true">Executing sql:&lt;br&gt;&lt;code style="font-weight: bold;"&gt;SET @ProcessID = (SELECT process_id FROM Process WHERE public_id = 'pyo_q2_UrE3MzZEYE3obHJ44MVsrz');&lt;/code&gt;</msg>
-<arg>${set_query}</arg>
-<doc>Executes the ``sql_string`` as a single SQL command.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.317092" elapsed="0.287724"/>
-</kw>
-<kw name="Query" owner="DatabaseLibrary">
-<msg time="2025-03-20T14:07:08.605935" level="INFO" html="true">Executing sql:&lt;br&gt;&lt;code style="font-weight: bold;"&gt;SELECT deb.document_number AS 'ID CLIENTE', CASE WHEN deb.document_type_id = 1 THEN 'DNI' WHEN deb.document_type_id = 3 THEN 'RUC' ELSE 'DNI' END AS 'DOCUMENTO', deb.document_number AS 'NUMERO DOCUMENTO', deb.name AS 'NOMBRE', 'email@pruebas.com' AS 'EMAIL', deb.phone_number AS 'TELEFONO', 'ACTIVO' AS 'ESTADO', inv.psp_tin AS 'ID ORDEN DE PAGO', inv.psp_tin AS 'REFERENCIA', inv.psp_tin AS 'NOMBRE ORDEN', inv.psp_tin AS 'DESCRIPCION', inv.currency_code AS 'MONEDA', ROUND(inv.amount, 2) AS 'MONTO', '31/12/2022' AS 'VENCIMIENTO', '31/12/2022' AS 'EXPIRACION', CASE WHEN bank.external_id = '001' THEN '1' WHEN bank.external_id = '002' THEN '2' WHEN bank.external_id = '003' THEN '3' WHEN bank.external_id = '004' THEN '4' ELSE '000' END AS 'CODIGO BANCO', acc.account_number AS 'CUENTA', CASE WHEN acc.metadata-&gt;&gt;'$.type' = 'SAVING' THEN 'AHORRO' ELSE 'CORRIENTE' END AS 'TIPO DE CUENTA', acc.metadata-&gt;&gt;'$.cci' AS 'CCI' FROM Customer cus JOIN Process proc ON proc.customer_id = cus.customer_id JOIN Payout_Process pyo ON pyo.payout_process_id = proc.process_id JOIN ProcessStatus proc_s2 ON proc_s2.process_status_id = proc.process_status_id AND proc_s2.process_type_id = 10 JOIN Payout_Process_Items ppi ON ppi.payout_process_id = pyo.payout_process_id JOIN Account acc_pyo ON acc_pyo.account_id = pyo.account_id JOIN Invoice inv ON ppi.resource_id = inv.invoice_id AND inv.create_date &gt; '2023-04-01 15:45:15' JOIN Debtor deb ON deb.debtor_id = inv.debtor_id JOIN Customer deb_cus ON deb.customer_id = deb_cus.customer_id JOIN Account acc ON acc.customer_id = deb_cus.customer_id AND acc.public_id = CONVERT(inv.order_detail-&gt;&gt;'$.metadata.accounts[0].id' USING utf8) JOIN Bank bank ON bank.bank_id = acc.bank_id JOIN ProcessStatus proc_s1 ON proc_s1.process_status_id = inv.status AND proc_s1.process_type_id = 1 LEFT JOIN Payout po ON ppi.payout_id = po.payout_id LEFT JOIN Transaction tr ON po.payout_id = tr.transaction_id LEFT JOIN Configuration cnf ON cnf.customer_id = cus.customer_id AND cnf.key = 'payouts_services.configuration' WHERE cus.customer_type_id = 104 AND pyo.payout_process_id = @ProcessID AND inv.status = 3;&lt;/code&gt;</msg>
-<msg time="2025-03-20T14:07:08.707615" level="INFO" html="true">&lt;div style="max-width: 100%; overflow-x: auto;"&gt;&lt;table style="width: auto; border-collapse: collapse; border: 2px solid rgb(140 140 140)"&gt;&lt;caption style="text-align: left; font-weight: bold; padding: 5px;"&gt;Query returned 0 rows&lt;/caption&gt;&lt;tr&gt;&lt;th scope="col" style="background-color: #d6ecd4; border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;Row&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;ID CLIENTE&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;DOCUMENTO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;NUMERO DOCUMENTO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;NOMBRE&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;EMAIL&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;TELEFONO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;ESTADO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;ID ORDEN DE PAGO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;REFERENCIA&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;NOMBRE ORDEN&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;DESCRIPCION&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;MONEDA&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;MONTO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;VENCIMIENTO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;EXPIRACION&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;CODIGO BANCO&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;CUENTA&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;TIPO DE CUENTA&lt;/th&gt;&lt;th scope="col" style="background-color: #505050; color: #fff;border: 1px solid rgb(160 160 160);padding: 8px 10px;text-align: center;"&gt;CCI&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;</msg>
-<msg time="2025-03-20T14:07:08.801829" level="INFO">${result} = ()</msg>
-<var>${result}</var>
-<arg>${select_query}</arg>
-<doc>Runs a query with the ``select_statement`` and returns the result as list of rows.
-The type of row values depends on the database module -
-usually they are tuples or tuple-like objects.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.605935" elapsed="0.195894"/>
-</kw>
-<kw name="Log" owner="BuiltIn">
-<msg time="2025-03-20T14:07:08.802833" level="INFO">()</msg>
-<arg>${result}</arg>
-<doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.802833" elapsed="0.000000"/>
-</kw>
-<kw name="Run Keyword If" owner="BuiltIn">
-<kw name="Log" owner="BuiltIn">
-<msg time="2025-03-20T14:07:08.805142" level="INFO">No se encontraron registros para exportar.</msg>
-<arg>No se encontraron registros para exportar.</arg>
-<doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.805142" elapsed="0.000000"/>
-</kw>
-<arg>${result}</arg>
-<arg>Exportar a XLS</arg>
-<arg>${result}</arg>
-<arg>ELSE</arg>
-<arg>Log</arg>
-<arg>No se encontraron registros para exportar.</arg>
-<doc>Runs the given keyword with the given arguments, if ``condition`` is true.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.803879" elapsed="0.001263"/>
-</kw>
+<robot generator="Robot 7.2 (Python 3.11.5 on win32)" generated="2025-03-25T17:38:00.918042" rpa="false" schemaversion="5">
+<suite id="s1" name="03-ImportarPayout" source="C:\Users\USUARIO\PycharmProjects\PythonProject\FlujoPayoutPorCorte\03-ImportarPayout.robot">
+<test id="s1-t1" name="Iniciar sesión, y aprobar payout" line="118">
 <kw name="Abrir Página de Login">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:13.807353" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:08.806752" elapsed="5.000601"/>
-</kw>
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:13.809445" level="INFO">Opening browser 'Chrome' to base url 'https://q2-kcms.kashio-dev.net/'.</msg>
+<msg time="2025-03-25T17:38:02.155225" level="INFO">Opening browser 'Chrome' to base url 'https://q2-kcms.kashio-dev.net/'.</msg>
 <arg>${URL}</arg>
 <arg>${BROWSER}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="PASS" start="2025-03-20T14:07:13.808452" elapsed="3.242380"/>
+<status status="PASS" start="2025-03-25T17:38:02.154225" elapsed="8.838334"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="PASS" start="2025-03-20T14:07:17.051844" elapsed="2.094349"/>
+<status status="PASS" start="2025-03-25T17:38:10.992559" elapsed="0.070896"/>
 </kw>
 <kw name="Wait Until Page Contains" owner="SeleniumLibrary">
 <arg>Login</arg>
 <arg>timeout=20s</arg>
 <doc>Waits until ``text`` appears on the current page.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.147096" elapsed="0.054925"/>
+<status status="PASS" start="2025-03-25T17:38:11.063991" elapsed="2.681476"/>
 </kw>
-<status status="PASS" start="2025-03-20T14:07:08.805142" elapsed="10.397969"/>
+<doc>Abre el navegador y navega a la página de login.</doc>
+<status status="PASS" start="2025-03-25T17:38:02.152229" elapsed="11.593238"/>
 </kw>
 <kw name="Ingresar Credenciales">
 <kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
 <arg>id=email-input</arg>
 <arg>timeout=10s</arg>
 <doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.205342" elapsed="0.075996"/>
+<status status="PASS" start="2025-03-25T17:38:13.747467" elapsed="0.132529"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:19.283417" level="INFO">Typing text 'juan.Q2.PAYOUT.08232023-1374@kashio.net' into text field 'id=email-input'.</msg>
+<msg time="2025-03-25T17:38:13.880994" level="INFO">Typing text 'juan.Q2.PAYOUT.08042023-2573@kashio.net' into text field 'id=email-input'.</msg>
 <arg>id=email-input</arg>
 <arg>${username}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.282379" elapsed="0.485532"/>
+<status status="PASS" start="2025-03-25T17:38:13.880994" elapsed="0.269630"/>
 </kw>
 <kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:19.768911" level="INFO">Typing text 'Kashio2020+' into text field 'id=password-input'.</msg>
+<msg time="2025-03-25T17:38:14.150624" level="INFO">Typing text 'Kashio2020+' into text field 'id=password-input'.</msg>
 <arg>id=password-input</arg>
 <arg>${password}</arg>
 <doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.768911" elapsed="0.173556"/>
+<status status="PASS" start="2025-03-25T17:38:14.150624" elapsed="0.139292"/>
 </kw>
 <arg>${USER}</arg>
 <arg>${PASSWORD}</arg>
-<status status="PASS" start="2025-03-20T14:07:19.204146" elapsed="0.738321"/>
+<doc>Ingresa las credenciales en los campos correspondientes.</doc>
+<status status="PASS" start="2025-03-25T17:38:13.746466" elapsed="0.543450"/>
 </kw>
 <kw name="Hacer Clic en Login">
 <kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
 <arg>id=${LOGIN_BUTTON_ID}</arg>
 <arg>timeout=10s</arg>
 <doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.943978" elapsed="0.022580"/>
+<status status="PASS" start="2025-03-25T17:38:14.293915" elapsed="0.024149"/>
 </kw>
 <kw name="Click Button" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:19.966558" level="INFO">Clicking button 'id=login-submit-button'.</msg>
+<msg time="2025-03-25T17:38:14.319063" level="INFO">Clicking button 'id=login-submit-button'.</msg>
 <arg>id=${LOGIN_BUTTON_ID}</arg>
 <doc>Clicks the button identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:19.966558" elapsed="0.163336"/>
+<status status="PASS" start="2025-03-25T17:38:14.319063" elapsed="0.145353"/>
 </kw>
-<status status="PASS" start="2025-03-20T14:07:19.943978" elapsed="0.185916"/>
+<doc>Hace clic en el botón de iniciar sesión.</doc>
+<status status="PASS" start="2025-03-25T17:38:14.293915" elapsed="0.170501"/>
 </kw>
 <kw name="Esperar a que Cargue el Home">
 <kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:30.131306" level="INFO">Slept 10 seconds.</msg>
+<msg time="2025-03-25T17:38:24.467834" level="INFO">Slept 10 seconds.</msg>
 <arg>${HOME_WAIT_TIME}</arg>
 <doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:20.130901" elapsed="10.001461"/>
+<status status="PASS" start="2025-03-25T17:38:14.466414" elapsed="10.001420"/>
 </kw>
-<status status="PASS" start="2025-03-20T14:07:20.130901" elapsed="10.001461"/>
+<doc>Espera 10 segundos para asegurarse de que la página de inicio se haya cargado completamente.</doc>
+<status status="PASS" start="2025-03-25T17:38:14.465414" elapsed="10.003431"/>
 </kw>
 <kw name="Hacer Clic en Pagos Masivos">
 <kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<msg time="2025-03-25T17:38:24.559827" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F8FFC]
+	(No symbol) [0x00007FF61033F8DF]
+	(No symbol) [0x00007FF610377AF2]
+	(No symbol) [0x00007FF61037244E]
+	(No symbol) [0x00007FF6103714F9]
+	(No symbol) [0x00007FF6102C55E5]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF6102C41FF]
+	GetHandleVerifier [0x00007FF6108EFA28+4141608]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</msg>
+<msg time="2025-03-25T17:38:24.561847" level="FAIL">InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.118)
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F91CA]
+	(No symbol) [0x00007FF6102E4F85]
+	(No symbol) [0x00007FF610309F94]
+	(No symbol) [0x00007FF61037F9DF]
+	(No symbol) [0x00007FF61039FBE2]
+	(No symbol) [0x00007FF610377A03]
+	(No symbol) [0x00007FF6103406D0]
+	(No symbol) [0x00007FF610341983]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF61046F4A4]
+	(No symbol) [0x00007FF61046F646]
+	(No symbol) [0x00007FF61045EAA9]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</msg>
 <arg>xpath=//span[@class='${NAV_TITLE_CLASS}' and text()='${NAV_TITLE_TEXT}']</arg>
 <arg>timeout=10s</arg>
 <doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.135989" elapsed="0.072843"/>
+<status status="FAIL" start="2025-03-25T17:38:24.469846" elapsed="0.102892">InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.118)
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F91CA]
+	(No symbol) [0x00007FF6102E4F85]
+	(No symbol) [0x00007FF610309F94]
+	(No symbol) [0x00007FF61037F9DF]
+	(No symbol) [0x00007FF61039FBE2]
+	(No symbol) [0x00007FF610377A03]
+	(No symbol) [0x00007FF6103406D0]
+	(No symbol) [0x00007FF610341983]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF61046F4A4]
+	(No symbol) [0x00007FF61046F646]
+	(No symbol) [0x00007FF61045EAA9]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</status>
 </kw>
 <kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:30.209845" level="INFO">Clicking element 'xpath=//span[@class='nav-title' and text()='Pagos Masivos']'.</msg>
 <arg>xpath=//span[@class='${NAV_TITLE_CLASS}' and text()='${NAV_TITLE_TEXT}']</arg>
 <doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.208832" elapsed="0.140584"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.573048" elapsed="0.000000"/>
 </kw>
-<status status="PASS" start="2025-03-20T14:07:30.133971" elapsed="0.215445"/>
+<doc>Hace clic en el &lt;span&gt; con la clase 'nav-title' que contiene el texto 'Pagos Masivos'.</doc>
+<status status="FAIL" start="2025-03-25T17:38:24.469846" elapsed="0.103516">InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.118)
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F91CA]
+	(No symbol) [0x00007FF6102E4F85]
+	(No symbol) [0x00007FF610309F94]
+	(No symbol) [0x00007FF61037F9DF]
+	(No symbol) [0x00007FF61039FBE2]
+	(No symbol) [0x00007FF610377A03]
+	(No symbol) [0x00007FF6103406D0]
+	(No symbol) [0x00007FF610341983]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF61046F4A4]
+	(No symbol) [0x00007FF61046F646]
+	(No symbol) [0x00007FF61045EAA9]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</status>
 </kw>
-<kw name="Esperar a que Cargue la Página de Pagos">
-<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
-<arg>Pagos</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until ``text`` appears on the current page.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.350934" elapsed="0.029251"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:30.350934" elapsed="0.029251"/>
+<kw name="Esperar a que Cargue la Página">
+<doc>Espera a que la página de pagos haya cargado completamente.</doc>
+<status status="NOT RUN" start="2025-03-25T17:38:24.574293" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Enlace de Pagos (Lista)">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=//a[@href='${PAYOUT_LINK_HREF}' and contains(text(), 'Lista')]</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.382222" elapsed="0.069379"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:30.452658" level="INFO">Clicking element 'xpath=//a[@href='/payout_process/list' and contains(text(), 'Lista')]'.</msg>
-<arg>xpath=//a[@href='${PAYOUT_LINK_HREF}' and contains(text(), 'Lista')]</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.451601" elapsed="0.413575"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:30.381194" elapsed="0.483982"/>
+<doc>Hace clic en el enlace &lt;a href="/payout_process/list"&gt; que contiene el texto "Lista".</doc>
+<status status="NOT RUN" start="2025-03-25T17:38:24.575094" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Botón Importar">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${IMPORT_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:30.866234" elapsed="0.544498"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:31.411721" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/payoutprocesslist/div[2]/div/header/div/div/div[2]/div[2]/button'.</msg>
-<arg>xpath=${IMPORT_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:31.410732" elapsed="0.405019"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:30.866234" elapsed="0.949517"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.575717" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Seleccione">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${SELECT_ELEMENT_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:31.820806" elapsed="0.334059"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:32.155944" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div[1]/div[2]/select'.</msg>
-<arg>xpath=${SELECT_ELEMENT_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:32.155944" elapsed="0.275700"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:31.819282" elapsed="0.612362"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.576025" elapsed="0.000000"/>
 </kw>
 <kw name="Seleccionar Opcion 2">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${OPTION_2_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:32.432645" elapsed="0.076540"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:32.510696" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div[1]/div[2]/select/option[2]'.</msg>
-<arg>xpath=${OPTION_2_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:32.510696" elapsed="0.062876"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:32.432645" elapsed="0.140927"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.576358" elapsed="0.000000"/>
 </kw>
 <kw name="Cargar Archivo">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:38.576592" level="INFO">Slept 6 seconds.</msg>
-<arg>6s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:32.576235" elapsed="6.000357"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:38.577638" level="INFO">Typing text 'C:\Users\USUARIO\Downloads\PAYOUT 1070_TESORERIA.xls' into text field 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div[2]/div[2]/form/input'.</msg>
-<arg>xpath=${INPUT_FIELD_XPATH}</arg>
-<arg>${FILE_PATH}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:38.577638" elapsed="0.189205"/>
-</kw>
 <doc>Carga el archivo especificado en el campo de entrada de archivo.</doc>
-<status status="PASS" start="2025-03-20T14:07:32.575219" elapsed="6.191624"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.576659" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Próximo">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:41.769380" level="INFO">Slept 3 seconds.</msg>
-<arg>3s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:38.768839" elapsed="3.000541"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${NEXT_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:41.769380" elapsed="0.052363"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:41.822745" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/button'.</msg>
-<arg>xpath=${NEXT_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:41.822745" elapsed="0.210794"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:38.767832" elapsed="3.266218"/>
-</kw>
-<kw name="Sleep de 6 Segundos">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:48.036295" level="INFO">Slept 6 seconds.</msg>
-<arg>6s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:42.035056" elapsed="6.001239"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:42.034050" elapsed="6.002245"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.576659" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Botón Confirmar">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${SECOND_NEXT_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:48.038383" elapsed="0.063238"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:48.102647" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div/button[2]'.</msg>
-<arg>xpath=${SECOND_NEXT_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:48.102647" elapsed="0.192762"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:48.037312" elapsed="0.259192"/>
-</kw>
-<kw name="Sleep de 5 Segundos">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:53.299108" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:48.298422" elapsed="5.001198"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:48.297513" elapsed="5.002107"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.577045" elapsed="0.000000"/>
 </kw>
 <kw name="Hacer Clic en Botón Detalle de Pago">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:07:56.302452" level="INFO">Slept 3 seconds.</msg>
-<arg>3S</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:53.302290" elapsed="3.000162"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.577399" elapsed="0.000000"/>
 </kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${THIRD_NEXT_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:07:56.303483" elapsed="0.070374"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:07:56.376350" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocess-import/div[2]/div/app-old-payout-import-version/div/div/div/div/div[2]/div/div/button[1]'.</msg>
-<arg>xpath=${THIRD_NEXT_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:07:56.375228" elapsed="0.299740"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:53.301202" elapsed="3.373766"/>
-</kw>
-<kw name="Clic en Aprobar Tesorería">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:08:06.678271" level="INFO">Slept 10 seconds.</msg>
-<arg>10s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:07:56.676975" elapsed="10.001810"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${APPROVE_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:08:06.679806" elapsed="0.073146"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:06.755097" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/header/div/div/div[2]/div[2]/button'.</msg>
-<arg>xpath=${APPROVE_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:06.753942" elapsed="0.253863"/>
-</kw>
+<kw name="Clic en Aprobar KCMS">
 <doc>Espera 4 segundos y luego hace clic en el botón de aprobar.</doc>
-<status status="PASS" start="2025-03-20T14:07:56.676975" elapsed="10.331793"/>
-</kw>
-<kw name="Clic en Botón Confirmar Final">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:08:12.011067" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:08:07.009792" elapsed="5.001789"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${FINAL_CONFIRM_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:08:12.011581" elapsed="0.066837"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:12.079418" level="INFO">Clicking element 'xpath=//button[@class='btn btn-outline-primary' and @data-toggle='modal' and contains(text(), 'Confirmar')]'.</msg>
-<arg>xpath=${FINAL_CONFIRM_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:12.078418" elapsed="0.207987"/>
-</kw>
-<doc>Hace clic en el botón de confirmar que aparece después de aprobar tesorería.</doc>
-<status status="PASS" start="2025-03-20T14:08:07.009792" elapsed="5.276613"/>
-</kw>
-<kw name="Ingresar Número de Operación">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:08:17.289879" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:08:12.289482" elapsed="5.000397"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${OPERATION_NUMBER_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:08:17.289879" elapsed="0.052257"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:17.343643" level="INFO">Typing text '98469' into text field 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/div/div[6]/div/div/div[2]/div/form/div[2]/div/input'.</msg>
-<arg>xpath=${OPERATION_NUMBER_XPATH}</arg>
-<arg>${OPERATION_NUMBER}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:17.343643" elapsed="0.297272"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:17.641990" level="INFO">Typing text '98469' into text field 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/div/div[6]/div/div/div[2]/div/form/div[3]/div/input'.</msg>
-<arg>xpath=${OPERATION_NUMBER_XPATH_2}</arg>
-<arg>${OPERATION_NUMBER}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:17.640915" elapsed="0.346645"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:17.989587" level="INFO">Typing text '98469' into text field 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/div/div[6]/div/div/div[2]/div/form/div[4]/div/input'.</msg>
-<arg>xpath=${OPERATION_NUMBER_XPATH_3}</arg>
-<arg>${OPERATION_NUMBER}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:17.987560" elapsed="0.309590"/>
-</kw>
-<doc>Ingresa un número de operación de 5 dígitos en el campo correspondiente.</doc>
-<status status="PASS" start="2025-03-20T14:08:12.288406" elapsed="6.008744"/>
-</kw>
-<kw name="Cargar archivo xls cualquiera">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:08:23.300317" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:08:18.299159" elapsed="5.001158"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:23.301413" level="INFO">Typing text 'C:\Users\USUARIO\Downloads\Archivo_Cualquiera.xlsx' into text field 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/div/div[6]/div/div/div[2]/div/div/div[2]/input'.</msg>
-<arg>xpath=${INPUT_FIELD_XPATH_2}</arg>
-<arg>${FILE_PATH_2}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:23.300317" elapsed="0.238957"/>
-</kw>
-<doc>Carga el archivo especificado en el campo de entrada de archivo del modal de confirmacion.</doc>
-<status status="PASS" start="2025-03-20T14:08:18.298195" elapsed="5.241079"/>
-</kw>
-<kw name="Clic En Boton Grabar Modal">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:08:28.542540" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:08:23.541919" elapsed="5.000621"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${ENGRAVE_BUTTON_XPATH}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:08:28.542540" elapsed="0.070204"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:08:28.614332" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/div/div/div[6]/div/div/div[3]/button[1]'.</msg>
-<arg>xpath=${ENGRAVE_BUTTON_XPATH}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:08:28.613753" elapsed="0.201451"/>
-</kw>
-<doc>Espera 3 segundos y luego hace clic en el botón de grabar.</doc>
-<status status="PASS" start="2025-03-20T14:08:23.540841" elapsed="5.275369"/>
-</kw>
-<kw name="Sleep de 30 segundos">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:03.817800" level="INFO">Slept 35 seconds.</msg>
-<arg>35s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:08:28.817225" elapsed="35.001590"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:08:28.816210" elapsed="35.003609"/>
-</kw>
-<kw name="Hacer Clic en Pagos Masivos">
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=//span[@class='${NAV_TITLE_CLASS}' and text()='${NAV_TITLE_TEXT}']</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:03.821825" elapsed="0.074549"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:03.897372" level="INFO">Clicking element 'xpath=//span[@class='nav-title' and text()='Pagos Masivos']'.</msg>
-<arg>xpath=//span[@class='${NAV_TITLE_CLASS}' and text()='${NAV_TITLE_TEXT}']</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:03.896374" elapsed="0.268878"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:03.820831" elapsed="0.344421"/>
-</kw>
-<kw name="Hacer Clic en Lista Comercio">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:09.167615" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:04.167265" elapsed="5.000350"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${TRADE_LIST}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:09.168193" elapsed="0.040939"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:09.210654" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/payoutprocessview/div[2]/app-snav-menu-controller/app-old-snav-menu/aside/div/nav/ul/div/li[4]/ul/li[2]/a'.</msg>
-<arg>xpath=${TRADE_LIST}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:09.210654" elapsed="0.228524"/>
-</kw>
-<doc>Hace clic en lista comercio para confirmar el payout.</doc>
-<status status="PASS" start="2025-03-20T14:09:04.166261" elapsed="5.274427"/>
-</kw>
-<kw name="Hacer Clic en Primer Elemento Mobile Data">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:14.442300" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:09.441699" elapsed="5.000601"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=(//span[@class='mobile-data' and contains(text(), 'PAYOUT')])[1]</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:14.443940" elapsed="0.072894"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:14.516834" level="INFO">Clicking element 'xpath=(//span[@class='mobile-data' and contains(text(), 'PAYOUT')])[1]'.</msg>
-<arg>xpath=(//span[@class='mobile-data' and contains(text(), 'PAYOUT')])[1]</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:14.516834" elapsed="0.262925"/>
-</kw>
-<doc>Hace clic en el primer &lt;span&gt; con la clase 'mobile-data' que contiene el texto 'PAYOUT'.</doc>
-<status status="PASS" start="2025-03-20T14:09:09.441699" elapsed="5.338060"/>
-</kw>
-<kw name="Hacer Clic en btn Confirmar (Lista comercio)">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:19.782373" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:14.781806" elapsed="5.000567"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${BTN_CONFIRM}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:19.783923" elapsed="0.069742"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:19.856369" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocesscommerceview/div[2]/div/header/div/div/div[2]/div/button'.</msg>
-<arg>xpath=${BTN_CONFIRM}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:19.855346" elapsed="0.218566"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:14.780766" elapsed="5.293146"/>
-</kw>
-<kw name="Hacer clic btn Aceptar(Modal)">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:25.077639" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:20.075949" elapsed="5.002287"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${ACCEPT_FROM_MODAL}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:25.078236" elapsed="0.072730"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:25.152057" level="INFO">Clicking element 'xpath=/html/body/modal-container/div/div/div[3]/a/span'.</msg>
-<arg>xpath=${ACCEPT_FROM_MODAL}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:25.152057" elapsed="0.218699"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:20.074920" elapsed="5.295836"/>
-</kw>
-<kw name="Ingresar Numero de Operacion">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:30.374423" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:25.372766" elapsed="5.001657"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${OPERATION_NUMBER_XPATH_4}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:30.375224" elapsed="0.062554"/>
-</kw>
-<kw name="Input Text" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:30.438907" level="INFO">Typing text '98469' into text field 'xpath=/html/body/app-root/div/div/app-payoutprocesscommerceconfirm/div[2]/div/div/div/div/div/div/div/div[2]/form/div[1]/div/div/div[1]/input[3]'.</msg>
-<arg>xpath=${OPERATION_NUMBER_XPATH_4}</arg>
-<arg>${OPERATION_NUMBER}</arg>
-<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:30.437778" elapsed="0.265855"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:25.372766" elapsed="5.330867"/>
-</kw>
-<kw name="Clic en Confirmar(Proceso de confirmacion)">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:35.705838" level="INFO">Slept 5 seconds.</msg>
-<arg>5s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:30.705179" elapsed="5.000659"/>
-</kw>
-<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
-<arg>xpath=${BTN_CONFIRM_PROCCES}</arg>
-<arg>timeout=10s</arg>
-<doc>Waits until the element ``locator`` is visible.</doc>
-<status status="PASS" start="2025-03-20T14:09:35.705838" elapsed="0.070109"/>
-</kw>
-<kw name="Click Element" owner="SeleniumLibrary">
-<msg time="2025-03-20T14:09:35.778007" level="INFO">Clicking element 'xpath=/html/body/app-root/div/div/app-payoutprocesscommerceconfirm/div[2]/div/div/div/div/div/div/div/div[2]/form/div[2]/button'.</msg>
-<arg>xpath=${BTN_CONFIRM_PROCCES}</arg>
-<doc>Click the element identified by ``locator``.</doc>
-<status status="PASS" start="2025-03-20T14:09:35.775947" elapsed="0.197714"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:30.703633" elapsed="5.270028"/>
+<status status="NOT RUN" start="2025-03-25T17:38:24.577731" elapsed="0.000000"/>
 </kw>
 <kw name="Mantener Ventana Abierta">
-<kw name="Sleep" owner="BuiltIn">
-<msg time="2025-03-20T14:09:55.976688" level="INFO">Slept 20 seconds.</msg>
-<arg>20s</arg>
-<doc>Pauses the test executed for the given time.</doc>
-<status status="PASS" start="2025-03-20T14:09:35.976315" elapsed="20.000373"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:09:35.975301" elapsed="20.001387"/>
+<doc>Mantiene la ventana abierta durante 3 segundos para observación.</doc>
+<status status="NOT RUN" start="2025-03-25T17:38:24.577731" elapsed="0.000355"/>
 </kw>
 <kw name="Cerrar Navegador">
-<kw name="Close Browser" owner="SeleniumLibrary">
-<doc>Closes the current browser.</doc>
-<status status="PASS" start="2025-03-20T14:09:55.979782" elapsed="2.279742"/>
+<doc>Cierra el navegador después de completar las pruebas.</doc>
+<status status="NOT RUN" start="2025-03-25T17:38:24.578395" elapsed="0.000000"/>
 </kw>
-<status status="PASS" start="2025-03-20T14:09:55.978706" elapsed="2.280818"/>
-</kw>
-<status status="PASS" start="2025-03-20T14:07:08.312537" elapsed="169.948542"/>
+<doc>Flujo completo de login, navegación y confirmación de un payout.</doc>
+<status status="FAIL" start="2025-03-25T17:38:02.150227" elapsed="22.428484">InvalidSessionIdException: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=134.0.6998.118)
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F91CA]
+	(No symbol) [0x00007FF6102E4F85]
+	(No symbol) [0x00007FF610309F94]
+	(No symbol) [0x00007FF61037F9DF]
+	(No symbol) [0x00007FF61039FBE2]
+	(No symbol) [0x00007FF610377A03]
+	(No symbol) [0x00007FF6103406D0]
+	(No symbol) [0x00007FF610341983]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF61046F4A4]
+	(No symbol) [0x00007FF61046F646]
+	(No symbol) [0x00007FF61045EAA9]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</status>
 </test>
-<status status="PASS" start="2025-03-20T14:07:06.523457" elapsed="171.741418"/>
+<status status="FAIL" start="2025-03-25T17:38:00.924042" elapsed="23.655967"/>
 </suite>
 <statistics>
 <total>
-<stat pass="2" fail="0" skip="0">All Tests</stat>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
 </total>
 <tag>
 </tag>
 <suite>
-<stat name="00-Borrador" id="s1" pass="2" fail="0" skip="0">00-Borrador</stat>
+<stat name="03-ImportarPayout" id="s1" pass="0" fail="1" skip="0">03-ImportarPayout</stat>
 </suite>
 </statistics>
 <errors>
+<msg time="2025-03-25T17:38:24.559827" level="WARN">Keyword 'Capture Page Screenshot' could not be run on failure: Message: invalid session id
+Stacktrace:
+	GetHandleVerifier [0x00007FF610804C25+3179557]
+	(No symbol) [0x00007FF6104688A0]
+	(No symbol) [0x00007FF6102F8FFC]
+	(No symbol) [0x00007FF61033F8DF]
+	(No symbol) [0x00007FF610377AF2]
+	(No symbol) [0x00007FF61037244E]
+	(No symbol) [0x00007FF6103714F9]
+	(No symbol) [0x00007FF6102C55E5]
+	GetHandleVerifier [0x00007FF6108667CD+3579853]
+	GetHandleVerifier [0x00007FF61087D1D2+3672530]
+	GetHandleVerifier [0x00007FF610872153+3627347]
+	GetHandleVerifier [0x00007FF6105D092A+868650]
+	(No symbol) [0x00007FF610472FFF]
+	(No symbol) [0x00007FF6102C41FF]
+	GetHandleVerifier [0x00007FF6108EFA28+4141608]
+	BaseThreadInitThunk [0x00007FFDF3C1E8D7+23]
+	RtlUserThreadStart [0x00007FFDF4C7BF6C+44]
+</msg>
 </errors>
 </robot>
